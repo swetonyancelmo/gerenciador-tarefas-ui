@@ -1,26 +1,27 @@
-import { HttpClient } from "@angular/common/http";
-import { inject } from "@angular/core";
-import { Observable } from "rxjs";
-import { Task } from "../models/task.model";
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../../../core/config/api.config';
+import { CreateTaskRequest, Task } from '../models/task.model';
 
+@Injectable({ providedIn: 'root' })
 export class TaskService {
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = API_ENDPOINTS.tasks;
 
-    private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8080/tasks';
+  getTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(this.baseUrl);
+  }
 
-    getTasks(): Observable<Task[]> {
-        return this.http.get<Task[]>(this.apiUrl);
-    }
+  createTask(payload: CreateTaskRequest): Observable<Task> {
+    return this.http.post<Task>(this.baseUrl, payload);
+  }
 
-    createTask(task: Partial<Task>): Observable<Task> {
-        return this.http.post<Task>(this.apiUrl, task);
-    }
+  toggleComplete(id: number): Observable<Task> {
+    return this.http.patch<Task>(`${this.baseUrl}/${id}`, {});
+  }
 
-    completeTask(id: number): Observable<any> {
-        return this.http.patch(`${this.apiUrl}/${id}`, {});
-    }
-
-    deleteTask(id: number): Observable<any> {
-        return this.http.delete(`${this.apiUrl}/${id}`);
-    }
+  deleteTask(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

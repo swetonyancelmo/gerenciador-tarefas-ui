@@ -1,77 +1,118 @@
-import { Component, inject, OnInit } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { Task } from "../../models/task.model";
-import { TaskService } from "../../services/task.service";
-import { AuthService } from "../../../../core/auth/services/auth.service";
-import { Router } from "@angular/router";
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AuthService } from '../../../../core/auth/services/auth.service';
+import { TodoItemComponent } from '../../components/todo-item/todo-item.component';
+import { Task } from '../../models/task.model';
+import { TaskService } from '../../services/task.service';
 
 @Component({
-    selector: 'app-task-list',
-    imports: [FormsModule],
-    templateUrl: './task-list.component.html',
-    styleUrl: './task-list.component.css'
+  selector: 'app-task-list',
+  imports: [FormsModule, TodoItemComponent],
+  templateUrl: './task-list.component.html',
+  styleUrl: './task-list.component.css',
 })
 export class TaskListComponent implements OnInit {
+  readonly tasks = signal<Task[]>([]);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly submitting = signal(false);
 
-    tasks: Task[] = [];
-    newTaskTitle: string = '';
-    newTaskDescription: string = '';
+  readonly completedCount = computed(() => this.tasks().filter((t) => t.completed).length);
+  readonly totalCount = computed(() => this.tasks().length);
 
-    private taskService = inject(TaskService);
-    private authService = inject(AuthService);
-    private router = inject(Router);
+  newTaskTitle = '';
+  newTaskDescription = '';
 
-    ngOnInit(): void {
-        throw new Error("Method not implemented.");
-    }
+  private readonly taskService = inject(TaskService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
-    loadTasks() {
-        this.taskService.getTasks().subscribe({
-            next: (apiData) => {
-                this.tasks = apiData;
-            },
-            error: (erro) => console.error('Erro ao buscar tarefas: ', erro)
-        });
-    }
+  ngOnInit(): void {
+    this.loadTasks();
+  }
 
-    addTask() {
-        if(this.newTaskTitle.trim() && this.newTaskDescription.trim()) {
-            const newTask: Partial<Task> = { title: this.newTaskTitle, description: this.newTaskDescription };
+  loadTasks(): void {
+    this.loading.set(true);
+    this.error.set(null);
 
-            this.taskService.createTask(newTask).subscribe({
-                next: (taskCreated) => {
-                    this.tasks.push(taskCreated);
-                    this.newTaskTitle = '';
-                    this.newTaskDescription = '';
-                },
-                error: (erro) => console.error('Erro ao criar tarefa: ', erro)
-            });
-        }
-    }
+    this.taskService
+      .getTasks()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (tasks) => {
+          this.tasks.set(tasks);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.error.set('Não foi possível carregar as tarefas. Verifique sua conexão.');
+          this.loading.set(false);
+        },
+      });
+  }
 
-    toggleCompleted(task: Task) {
-        if(task.id) {
-            this.taskService.completeTask(task.id).subscribe({
-                next: () => {
-                    task.completed = !task.completed;
-                },
-                error: (erro) => console.error('Erro ao atualizar: ', erro)
-            });
-        }
-    }
+  addTask(): void {
+    const title = this.newTaskTitle.trim();
+    const description = this.newTaskDescription.trim();
 
-    deleteTask(id: number) {
-        this.taskService.deleteTask(id).subscribe({
-            next: () => {
-                this.tasks = this.tasks.filter(t => t.id !== id);
-            },
-            error: (erro) => console.error('Erro ao deletar: ', erro)
-        });
-    }
+    if (!title) return;
 
-    logout() {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-    }
+    this.submitting.set(true);
 
+    this.taskService
+      .createTask({ title, description })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (created) => {
+          this.tasks.update((list) => [...list, created]);
+          this.newTaskTitle = '';
+          this.newTaskDescription = '';
+          this.submitting.set(false);
+        },
+        error: () => {
+          this.error.set('Erro ao criar tarefa. Tente novamente.');
+          this.submitting.set(false);
+        },
+      });
+  }
+
+  toggleCompleted(taskId: number): void {
+    this.taskService
+      .toggleComplete(taskId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated) => {
+          this.tasks.update((list) =>
+            list.map((t) => (t.id === taskId ? { ...t, completed: updated.completed } : t)),
+          );
+        },
+        error: () => {
+          this.error.set('Erro ao atualizar tarefa.');
+        },
+      });
+  }
+
+  deleteTask(taskId: number): void {
+    this.taskService
+      .deleteTask(taskId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.tasks.update((list) => list.filter((t) => t.id !== taskId));
+        },
+        error: () => {
+          this.error.set('Erro ao excluir tarefa.');
+        },
+      });
+  }
+
+  dismissError(): void {
+    this.error.set(null);
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
 }
