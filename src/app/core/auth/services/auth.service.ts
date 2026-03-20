@@ -13,11 +13,11 @@ export class AuthService {
     private apiUrl = 'http://localhost:8080';
 
     register(userCreate: UserCreate) {
-        return this.http.post(`${this.apiUrl}/auth/register`, { userCreate });
+        return this.http.post(`${this.apiUrl}/auth/register`,  userCreate);
     }
 
     login(userLogin: UserLogin) {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, { userLogin })
+        return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, userLogin)
             .pipe(
                 tap(response => {
                     this.saveToken(response.token);
@@ -38,7 +38,7 @@ export class AuthService {
     }
 
     logout() {
-        localStorage.removeItem('jwt_item');
+        localStorage.removeItem('jwt_token');
     }
 
 }
