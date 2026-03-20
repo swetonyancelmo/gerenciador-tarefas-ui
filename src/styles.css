@@ -1,3 +1,17 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+
+@theme {
+  --color-primary: #7c3aed;
+  --color-primary-hover: #6d28d9;
+  --color-primary-light: #a78bfa;
+  --color-surface: #0f0d1a;
+  --color-surface-card: #1a1726;
+  --color-surface-input: #241f33;
+  --color-border: #2e2845;
+  --color-border-focus: #7c3aed;
+}
+
+html, body {
+  @apply min-h-screen bg-surface text-gray-100 antialiased;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
