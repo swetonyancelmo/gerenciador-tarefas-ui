@@ -1,0 +1,63 @@
+<div class="w-full max-w-md">
+    <div class="bg-surface-card rounded-2xl border border-border p-8 shadow-2xl shadow-purple-950/20">
+        <div class="mb-8 text-center">
+            <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-linear-to-br from-violet-600 to-blue-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-white">Bem-vindo de volta</h2>
+            <p class="mt-1 text-sm text-gray-400">Entre na sua conta para continuar</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" class="space-y-5">
+            <div>
+                <label for="email" class="mb-1.5 block text-sm font-medium text-gray-300">E-mail</label>
+                <input
+                    id="email"
+                    type="email"
+                    [(ngModel)]="email"
+                    name="email"
+                    placeholder="seu@email.com"
+                    required
+                    class="w-full rounded-lg border border-border bg-surface-input px-4 py-3 text-sm text-white placeholder-gray-500 transition-colors focus:border-border-focus focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+            </div>
+
+            <div>
+                <label for="password" class="mb-1.5 block text-sm font-medium text-gray-300">Senha</label>
+                <input
+                    id="password"
+                    type="password"
+                    [(ngModel)]="password"
+                    name="password"
+                    placeholder="••••••••"
+                    required
+                    class="w-full rounded-lg border border-border bg-surface-input px-4 py-3 text-sm text-white placeholder-gray-500 transition-colors focus:border-border-focus focus:outline-none focus:ring-1 focus:ring-primary"
+                >
+            </div>
+
+            @if (errorMessage) {
+                <div class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3">
+                    <p class="text-sm text-red-400">{{ errorMessage }}</p>
+                </div>
+            }
+
+            <button
+                type="submit"
+                class="w-full cursor-pointer rounded-lg bg-linear-to-r from-violet-600 to-blue-600 px-4 py-3 text-sm font-semibold text-white transition-all hover:from-violet-500 hover:to-blue-500 hover:shadow-lg hover:shadow-violet-600/25 active:scale-[0.98]"
+            >
+                Entrar
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-400">
+                Não tem uma conta?
+                <a (click)="registerPage()" class="cursor-pointer font-medium text-primary-light transition-colors hover:text-white">
+                    Criar conta
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
