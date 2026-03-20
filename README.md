@@ -1,59 +1,133 @@
-# GerenciadorTarefaUi
+<div align="center">
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
+# ✨ Gerenciador de Tarefas
 
-## Development server
+### Organize o caos. Uma tarefa de cada vez.
 
-To start a local development server, run:
+Interface web **moderna**, **rápida** e **segura** para criar, concluir e excluir tarefas — com autenticação JWT e integração a uma API REST.
+
+[![Angular](https://img.shields.io/badge/Angular-21-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+
+</div>
+
+---
+
+## Por que este projeto?
+
+> **Não é só mais uma lista de afazeres.**  
+> É um front-end pensado como produto: **Signals**, lazy loading, guards, interceptor HTTP, estados de carregamento e erros visíveis — tudo para uma experiência próxima do que você veria em times sênior.
+
+- **Dark mode nativo** com paleta roxo/azul e UI polida  
+- **Persistência real** via backend — suas tarefas voltam após recarregar a página (com API rodando)  
+- **Login e cadastro** com feedback claro (loading, erros, sucesso)  
+- **Rotas inteligentes**: visitantes vão para login; usuários logados não ficam presos na tela de auth  
+
+---
+
+## Funcionalidades
+
+| Área | O que você encontra |
+|------|---------------------|
+| **Auth** | Registro, login, JWT no `localStorage`, logout |
+| **Tarefas** | Listar, criar, marcar como concluída, excluir |
+| **Segurança** | `authGuard` / `guestGuard`, interceptor com `Bearer` token |
+| **UX** | Skeletons ao carregar, spinners nos envios, mensagens de erro dismissíveis |
+| **Código** | Standalone components, `input()` / `output()`, `signal()` / `computed()` |
+
+---
+
+## Stack técnica
+
+- **[Angular 21](https://angular.dev)** — SPA com componentes standalone e rotas lazy-loaded  
+- **[Tailwind CSS 4](https://tailwindcss.com)** — estilização utilitária e tema customizado  
+- **[RxJS](https://rxjs.dev)** — fluxos assíncronos com HTTP  
+- **[Vitest](https://vitest.dev)** — testes unitários (via `ng test`)  
+- **API REST** — esperada em `http://localhost:8080` (auth + `/tasks`)
+
+---
+
+## Pré-requisitos
+
+- **Node.js** (recomendado: LTS atual)  
+- **npm** (o projeto usa `npm@11.8.0` no `packageManager`)  
+- **Backend** rodando na porta **8080** com os endpoints de autenticação e tarefas (sem ele, login e lista não funcionarão)
+
+---
+
+## Como rodar
 
 ```bash
-ng serve
+# Instalar dependências
+npm install
+
+# Servidor de desenvolvimento (http://localhost:4200)
+npm start
+# ou: npx ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Build de produção:
 
 ```bash
-ng generate component component-name
+npm run build
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Testes:
 
 ```bash
-ng generate --help
+npm test
 ```
 
-## Building
+---
 
-To build the project run:
+## Configuração da API
 
-```bash
-ng build
+A URL base está centralizada em:
+
+`src/app/core/config/api.config.ts`
+
+Por padrão: **`http://localhost:8080`**.  
+Para outro ambiente (homologação, produção), altere esse arquivo ou evolua para `environment.*.ts` se preferir.
+
+---
+
+## Estrutura do projeto (visão geral)
+
+```
+src/app/
+├── core/                 # Transversal: auth, guards, interceptors, config
+│   ├── auth/
+│   └── config/
+├── features/
+│   ├── auth/pages/       # Login e registro
+│   └── tasks/            # Lista, todo-item, TaskService, models
+├── app.routes.ts
+├── app.config.ts
+└── app.ts
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Arquitetura em **feature folders** + **core** compartilhado — fácil de escalar e de onboardar novos devs.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Fluxo rápido para quem clona o repo
 
-```bash
-ng test
-```
+1. Sobe o **backend** na porta `8080`  
+2. `npm install` → `npm start`  
+3. Abre `http://localhost:4200`  
+4. Cria conta ou faz login → gerencia tarefas  
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Licença
 
-```bash
-ng e2e
-```
+Projeto pessoal / educacional — use e adapte como quiser.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+<div align="center">
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+**Feito com Angular 21 + Tailwind 4** · *Menos ruído, mais foco.*
+
+</div>
